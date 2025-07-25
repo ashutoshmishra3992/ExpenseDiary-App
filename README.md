@@ -43,8 +43,8 @@ A beautiful and intuitive React Native application for tracking personal expense
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/your-username/expense-diary.git
-   cd expense-diary
+   git clone https://github.com/ashutoshmishra3992/ExpenseDiary-App.git
+   cd ExpenseDiary-App
    ```
 
 2. **Install dependencies**
@@ -197,7 +197,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 For questions, suggestions, or collaboration opportunities, please reach out:
 
-- **Email**: your.email@example.com
+- **Email**: amdevprojects@gmail.com
 - **GitHub**: [ashutoshmishra3992](https://github.com/ashutoshmishra3992)
 - **LinkedIn**: [Ashutosh Mishra](https://www.linkedin.com/in/ashutosh-mishra-264a2669/)
 
