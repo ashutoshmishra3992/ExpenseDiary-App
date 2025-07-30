@@ -1,6 +1,21 @@
 import { StyleSheet, Dimensions } from 'react-native';
+import { 
+  SPACING, 
+  BORDER_RADIUS, 
+  SHADOWS, 
+  Z_INDEX, 
+  FONT_SIZES, 
+  FONT_WEIGHTS,
+  COMPONENT_HEIGHTS,
+  getResponsiveSpacing,
+  getDeviceType,
+  DEVICE_TYPES 
+} from '../../theme';
 
 const { width, height } = Dimensions.get('window');
+const deviceType = getDeviceType();
+const isTablet = deviceType === DEVICE_TYPES.TABLET;
+const responsivePadding = getResponsiveSpacing('3xl', '4xl', '5xl');
 
 export const styles = StyleSheet.create({
   container: {
@@ -16,13 +31,13 @@ export const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    zIndex: 1,
+    zIndex: Z_INDEX.background,
   },
   
   backgroundCircle: {
     position: 'absolute',
-    borderRadius: 1000,
-    zIndex: 2,
+    borderRadius: BORDER_RADIUS.full,
+    zIndex: Z_INDEX.background,
   },
   
   circle1: {
@@ -43,104 +58,56 @@ export const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 40,
-    zIndex: 3,
+    paddingHorizontal: responsivePadding,
+    zIndex: Z_INDEX.content,
   },
   
   logoContainer: {
-    marginBottom: 40,
+    marginBottom: SPACING['3xl'],
     alignItems: 'center',
   },
   
   logoIcon: {
-    width: 120,
-    height: 120,
-    borderRadius: 30,
+    width: isTablet ? 140 : 120,
+    height: isTablet ? 140 : 120,
+    borderRadius: BORDER_RADIUS['3xl'],
     justifyContent: 'center',
     alignItems: 'center',
-    shadowOffset: {
-      width: 0,
-      height: 8,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 16,
-    elevation: 12,
+    ...SHADOWS.xl,
   },
   
   logoText: {
-    fontSize: 60,
+    fontSize: FONT_SIZES['5xl'],
     textAlign: 'center',
+    fontWeight: FONT_WEIGHTS.bold,
   },
   
   logoImage: {
-    width: 80,
-    height: 80,
+    width: isTablet ? COMPONENT_HEIGHTS.icon['4xl'] : COMPONENT_HEIGHTS.icon['3xl'],
+    height: isTablet ? COMPONENT_HEIGHTS.icon['4xl'] : COMPONENT_HEIGHTS.icon['3xl'],
   },
   
   textContainer: {
     alignItems: 'center',
-    marginBottom: 50,
+    marginBottom: SPACING['4xl'],
   },
   
   appName: {
     textAlign: 'center',
-    marginBottom: 8,
-    fontWeight: '700',
+    marginBottom: SPACING.sm,
+    fontWeight: FONT_WEIGHTS.bold,
   },
   
   tagline: {
     textAlign: 'center',
-    marginBottom: 30,
-    fontWeight: '400',
-  },
-  
-  featureContainer: {
-    alignItems: 'flex-start',
-    gap: 12,
-  },
-  
-  featureRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  
-  featureDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-  },
-  
-  loadingContainer: {
-    alignItems: 'center',
-    width: '100%',
-    paddingHorizontal: 20,
-  },
-  
-  loadingBar: {
-    width: '60%',
-    height: 4,
-    backgroundColor: 'rgba(200, 200, 200, 0.3)',
-    borderRadius: 2,
-    overflow: 'hidden',
-    marginBottom: 12,
-  },
-  
-  loadingProgress: {
-    height: '100%',
-    borderRadius: 2,
-  },
-  
-  loadingText: {
-    textAlign: 'center',
-    textTransform: 'uppercase',
-    letterSpacing: 1,
+    marginBottom: SPACING['2xl'],
+    fontWeight: FONT_WEIGHTS.regular,
   },
   
   footer: {
     position: 'absolute',
-    bottom: 50,
+    bottom: SPACING['4xl'],
     alignItems: 'center',
-    zIndex: 3,
+    zIndex: Z_INDEX.content,
   },
 });

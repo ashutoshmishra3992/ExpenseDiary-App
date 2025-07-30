@@ -99,6 +99,12 @@ export const TEXT_STYLES = {
     lineHeight: FONT_SIZES.lg * LINE_HEIGHTS.relaxed,
     letterSpacing: LETTER_SPACING.normal,
   },
+  bodyMedium: {
+    fontFamily: FONTS.OPEN_SANS_REGULAR,
+    fontSize: FONT_SIZES.base,
+    lineHeight: FONT_SIZES.base * LINE_HEIGHTS.relaxed,
+    letterSpacing: LETTER_SPACING.normal,
+  },
   body: {
     fontFamily: FONTS.OPEN_SANS_REGULAR,
     fontSize: FONT_SIZES.base,
@@ -244,15 +250,15 @@ export const getTextStyle = (
 
 // Common text style combinations for expense tracking
 export const EXPENSE_TEXT_STYLES = {
-  // For displaying amounts with colors
-  positiveAmount: (amount: string) => ({
+  // For displaying amounts with colors - use with getFinancialColor()
+  positiveAmount: {
     ...TEXT_STYLES.amount,
-    // Color should be set from the color theme
-  }),
-  negativeAmount: (amount: string) => ({
+    // Apply financial.income color from theme
+  },
+  negativeAmount: {
     ...TEXT_STYLES.amount,
-    // Color should be set from the color theme
-  }),
+    // Apply financial.expense color from theme
+  },
   
   // For category labels
   categoryLabel: {
@@ -270,3 +276,10 @@ export const EXPENSE_TEXT_STYLES = {
     ...TEXT_STYLES.body,
   },
 } as const;
+
+// Helper function to get amount text style with proper color
+export const getAmountTextStyle = (isPositive: boolean, isDark: boolean = false) => {
+  const baseStyle = isPositive ? EXPENSE_TEXT_STYLES.positiveAmount : EXPENSE_TEXT_STYLES.negativeAmount;
+  // Color should be applied from financial colors in the component
+  return baseStyle;
+};

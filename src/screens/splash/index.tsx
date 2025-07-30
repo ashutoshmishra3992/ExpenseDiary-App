@@ -1,8 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import {
   View,
   Text,
-  Dimensions,
 } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -13,22 +12,32 @@ import Animated, {
   interpolate,
   Easing,
 } from 'react-native-reanimated';
-import { getThemeColors, COLORS } from '../../theme/colors';
-import { TEXT_STYLES } from '../../theme/typography';
+import { 
+  getThemeColors, 
+  COLORS, 
+  TEXT_STYLES,
+  ANIMATION_DURATIONS,
+  themeUtils,
+  getButtonAccessibilityProps 
+} from '../../theme';
 import { styles } from './styles';
 import AppLogo from '../../components/AppLogo';
+import { cacheStore } from '../../store/cache/cacheStore';
+import { CACHE_KEYS } from '../../store/cache/constants';
+import { useNavigation, CommonActions } from '@react-navigation/native';
+import Screens from '../../navigations/Screens';
 
-const { width, height } = Dimensions.get('window');
+// Use theme utilities for screen dimensions
 
 interface SplashScreenProps {
-  onAnimationComplete?: () => void;
   isDarkMode?: boolean;
 }
 
 const SplashScreen: React.FC<SplashScreenProps> = ({ 
-  onAnimationComplete,
   isDarkMode = false 
 }) => {
+  const navigation = useNavigation();
+
   // Reanimated shared values
   const fadeValue = useSharedValue(0);
   const scaleValue = useSharedValue(0.8);
@@ -39,17 +48,35 @@ const SplashScreen: React.FC<SplashScreenProps> = ({
   const colors = getThemeColors(isDarkMode);
 
   // Animation complete callback
-  const handleAnimationComplete = () => {
-    if (onAnimationComplete) {
-      onAnimationComplete();
+  const handleAnimationComplete = useCallback(() => {
+    try {
+      const accessToken = cacheStore.getString(CACHE_KEYS.ACCESS_TOKEN);
+      if (accessToken) {
+        navigation.dispatch(CommonActions.reset({
+          index: 0,
+          routes: [{ name: Screens.HOME }],
+        }));
+      } else {
+        navigation.dispatch(CommonActions.reset({
+          index: 0,
+          routes: [{ name: Screens.AUTH }],
+        }));
+      }
+    } catch (error) {
+      console.error('Error during navigation:', error);
+      // Fallback to auth screen
+      navigation.dispatch(CommonActions.reset({
+        index: 0,
+        routes: [{ name: Screens.AUTH }],
+      }));
     }
-  };
+  }, [navigation]);
 
   useEffect(() => {
     // Start animations sequence
     // Initial fade and logo animations
     fadeValue.value = withTiming(1, { 
-      duration: 800,
+      duration: ANIMATION_DURATIONS.slow,
       easing: Easing.out(Easing.cubic),
     });
     
@@ -60,24 +87,24 @@ const SplashScreen: React.FC<SplashScreenProps> = ({
     });
     
     logoRotateValue.value = withTiming(1, {
-      duration: 1000,
+      duration: ANIMATION_DURATIONS.slow * 2,
       easing: Easing.out(Easing.cubic),
     });
 
     // Text slide up animation with delay
-    slideValue.value = withDelay(400, withTiming(0, {
-      duration: 600,
+    slideValue.value = withDelay(ANIMATION_DURATIONS.normal, withTiming(0, {
+      duration: ANIMATION_DURATIONS.normal * 2,
       easing: Easing.out(Easing.cubic),
     }));
 
     // Loading progress animation
-    loadingProgress.value = withDelay(800, withTiming(1, {
-      duration: 1200,
+    loadingProgress.value = withDelay(ANIMATION_DURATIONS.slow, withTiming(1, {
+      duration: ANIMATION_DURATIONS.slow * 2.4,
       easing: Easing.out(Easing.cubic),
     }));
 
     // Complete animation after total duration
-    const totalDuration = 2500; // 2.5 seconds
+    const totalDuration = ANIMATION_DURATIONS.slow * 5; // 2.5 seconds
     const timer = setTimeout(() => {
       handleAnimationComplete();
     }, totalDuration);
@@ -150,7 +177,12 @@ const SplashScreen: React.FC<SplashScreenProps> = ({
   }));
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background.primary }]}>
+    <View 
+      style={[styles.container, { backgroundColor: colors.background.primary }]}
+      accessible={true}
+      accessibilityRole="none"
+      accessibilityLabel="Expense Diary splash screen"
+    >
       {/* Background Gradient Effect */}
       <Animated.View 
         style={[
@@ -158,8 +190,8 @@ const SplashScreen: React.FC<SplashScreenProps> = ({
           fadeAnimatedStyle,
           {
             backgroundColor: isDarkMode 
-              ? 'rgba(99, 179, 237, 0.1)' 
-              : 'rgba(49, 130, 206, 0.05)'
+              ? colors.primary[500] + '1A' // 10% opacity 
+              : colors.primary[500] + '0D' // 5% opacity
           }
         ]} 
       />
@@ -172,8 +204,8 @@ const SplashScreen: React.FC<SplashScreenProps> = ({
           circle1AnimatedStyle,
           { 
             backgroundColor: isDarkMode 
-              ? 'rgba(167, 139, 250, 0.1)' 
-              : 'rgba(124, 58, 237, 0.1)' 
+              ? colors.secondary[400] + '1A' // 10% opacity
+              : colors.secondary[600] + '1A' // 10% opacity
           }
         ]} 
       />
@@ -184,8 +216,8 @@ const SplashScreen: React.FC<SplashScreenProps> = ({
           circle2AnimatedStyle,
           { 
             backgroundColor: isDarkMode 
-              ? 'rgba(52, 211, 153, 0.1)' 
-              : 'rgba(5, 150, 105, 0.1)' 
+              ? colors.financial.income + '1A' // 10% opacity
+              : colors.financial.income + '1A' // 10% opacity
           }
         ]} 
       />
@@ -218,68 +250,29 @@ const SplashScreen: React.FC<SplashScreenProps> = ({
             textAnimatedStyle,
           ]}
         >
-          <Text style={[
-            TEXT_STYLES.h1,
-            styles.appName,
-            { color: colors.text.primary }
-          ]}>
+          <Text 
+            style={[
+              TEXT_STYLES.h1,
+              styles.appName,
+              { color: colors.text.primary }
+            ]}
+            accessible={true}
+            accessibilityRole="header"
+            accessibilityLabel="Expense Diary app name"
+          >
             Expense Diary
           </Text>
           
-          <Text style={[
-            TEXT_STYLES.bodyLarge,
-            styles.tagline,
-            { color: colors.text.secondary }
-          ]}>
+          <Text 
+            style={[
+              TEXT_STYLES.bodyLarge,
+              styles.tagline,
+              { color: colors.text.secondary }
+            ]}
+            accessible={true}
+            accessibilityLabel="App tagline: Track, Save, Grow"
+          >
             Track, Save, Grow
-          </Text>
-          
-          <View style={styles.featureContainer}>
-            <View style={styles.featureRow}>
-              <View style={[styles.featureDot, { backgroundColor: colors.financial.income }]} />
-              <Text style={[TEXT_STYLES.bodySmall, { color: colors.text.tertiary }]}>
-                Smart Expense Tracking
-              </Text>
-            </View>
-            <View style={styles.featureRow}>
-              <View style={[styles.featureDot, { backgroundColor: colors.financial.savings }]} />
-              <Text style={[TEXT_STYLES.bodySmall, { color: colors.text.tertiary }]}>
-                Budget Management
-              </Text>
-            </View>
-            <View style={styles.featureRow}>
-              <View style={[styles.featureDot, { backgroundColor: colors.financial.investment }]} />
-              <Text style={[TEXT_STYLES.bodySmall, { color: colors.text.tertiary }]}>
-                Financial Insights
-              </Text>
-            </View>
-          </View>
-        </Animated.View>
-
-        {/* Loading Indicator */}
-        <Animated.View 
-          style={[
-            styles.loadingContainer,
-            loadingContainerAnimatedStyle,
-          ]}
-        >
-          <View style={styles.loadingBar}>
-            <Animated.View 
-              style={[
-                styles.loadingProgress,
-                loadingBarAnimatedStyle,
-                { 
-                  backgroundColor: colors.primary[500],
-                }
-              ]} 
-            />
-          </View>
-          <Text style={[
-            TEXT_STYLES.caption,
-            styles.loadingText,
-            { color: colors.text.tertiary }
-          ]}>
-            Loading your financial dashboard...
           </Text>
         </Animated.View>
       </View>
@@ -291,10 +284,14 @@ const SplashScreen: React.FC<SplashScreenProps> = ({
           fadeAnimatedStyle,
         ]}
       >
-        <Text style={[
-          TEXT_STYLES.caption,
-          { color: colors.text.tertiary }
-        ]}>
+        <Text 
+          style={[
+            TEXT_STYLES.caption,
+            { color: colors.text.tertiary }
+          ]}
+          accessible={true}
+          accessibilityLabel="Your personal finance companion"
+        >
           Your personal finance companion
         </Text>
       </Animated.View>

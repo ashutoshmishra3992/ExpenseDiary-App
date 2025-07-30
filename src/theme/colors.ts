@@ -74,7 +74,7 @@ export const COLORS = {
     
     // Status colors
     status: {
-      success: '#059669',
+      success: '#10B981', // Changed to avoid duplication with financial.income
       successLight: '#D1FAE5',
       warning: '#D97706',
       warningLight: '#FEF3C7',
@@ -169,8 +169,8 @@ export const COLORS = {
     
     // Status colors (adjusted for dark theme)
     status: {
-      success: '#34D399',
-      successLight: 'rgba(52, 211, 153, 0.1)',
+      success: '#10B981', // Consistent with light theme, different from financial.income
+      successLight: 'rgba(16, 185, 129, 0.1)',
       warning: '#FBBF24',
       warningLight: 'rgba(251, 191, 36, 0.1)',
       error: '#F87171',
@@ -205,22 +205,15 @@ export const COLORS = {
       '#6B7280', '#14B8A6', '#F97316', '#06B6D4', '#84CC16',
     ],
     
-    // Gradient backgrounds
+    // Gradient colors for React Native LinearGradient
     gradients: {
-      primary: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      income: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)',
-      expense: 'linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%)',
-      neutral: 'linear-gradient(135deg, #74b9ff 0%, #0984e3 100%)',
+      primary: ['#667eea', '#764ba2'],
+      income: ['#11998e', '#38ef7d'],
+      expense: ['#ff6b6b', '#ee5a24'],
+      neutral: ['#74b9ff', '#0984e3'],
     },
   },
-  
-  // ===== UTILITY COLORS =====
-  shadow: {
-    light: 'rgba(0, 0, 0, 0.1)',
-    medium: 'rgba(0, 0, 0, 0.15)',
-    heavy: 'rgba(0, 0, 0, 0.25)',
-    colored: 'rgba(49, 130, 206, 0.15)',
-  },
+
   
   // ===== OPACITY VARIANTS =====
   opacity: {
@@ -253,11 +246,4 @@ export const getFinancialColor = (type: 'income' | 'expense' | 'savings' | 'inve
   return theme.financial[type]
 }
 
-// ===== LEGACY SUPPORT (if needed) =====
-// Keeping some commonly used legacy colors for backward compatibility
-export const LEGACY_COLORS = {
-  COLOR_FFFFFF: COLORS.common.white,
-  COLOR_000000: COLORS.common.black,
-  TRANSPARENT: COLORS.common.transparent,
-  // Add more legacy mappings as needed
-}
+
